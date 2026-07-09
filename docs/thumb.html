@@ -1,0 +1,79 @@
+<!doctype html><html><head><meta charset="utf-8"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'Segoe UI',Inter,sans-serif}
+body{width:1200px;height:750px;overflow:hidden;position:relative;color:#e7ecf4;
+background:radial-gradient(60% 55% at 12% 8%,rgba(59,130,246,.20),transparent 60%),
+           radial-gradient(55% 55% at 92% 96%,rgba(20,184,166,.20),transparent 60%),#0a0e16}
+.grid{position:absolute;inset:0;opacity:.26;
+background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+background-size:46px 46px;mask-image:radial-gradient(circle at 40% 40%,#000,transparent 80%)}
+.wrap{position:relative;padding:52px 58px;height:100%;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:15px;margin-bottom:26px}
+.logo{width:56px;height:56px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#3b82f6,#14b8a6);color:#04121f;font-size:1.5rem}
+.brand .n{font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+.brand .n small{display:block;font-size:.8rem;font-weight:500;color:#8a95a8}
+.badges{margin-left:auto;display:flex;gap:9px}
+.bd{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;color:#34d399;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.09);padding:8px 14px;border-radius:999px}
+.bd .dot{width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 9px #34d399}
+.main{display:flex;gap:40px;flex:1;align-items:center}
+.left{width:560px}
+.left h1{font-size:2.9rem;line-height:1.07;letter-spacing:-.03em;font-weight:700}
+.left h1 .g{background:linear-gradient(120deg,#60a5fa,#2dd4bf);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.left .sub{font-size:1.12rem;color:#aeb7c7;margin-top:16px;line-height:1.5}
+.feats{margin-top:26px;display:flex;flex-direction:column;gap:12px}
+.feat{display:flex;align-items:center;gap:13px;font-size:1rem;color:#d6dde9}
+.feat i{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:.9rem;background:rgba(59,130,246,.16);color:#93c5fd;flex-shrink:0}
+.feat.g i{background:rgba(20,184,166,.16);color:#5eead4}
+.mock{flex:1;background:linear-gradient(180deg,#111825,#0d131e);border:1px solid #22303f;border-radius:20px;padding:20px;box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.dhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dpill{font-size:1rem;font-weight:700;padding:7px 13px;border-radius:9px;background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.4)}
+.route{font-size:.76rem;font-weight:600;padding:6px 11px;border-radius:999px;background:rgba(245,158,11,.13);color:#fbbf24}
+.mini{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+.mstep{display:flex;align-items:center;gap:10px;font-size:.82rem;color:#c5cede}
+.mstep .ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:.72rem;flex-shrink:0}
+.i-b{background:rgba(59,130,246,.15);color:#93c5fd}.i-p{background:rgba(167,139,250,.15);color:#c4b5fd}
+.i-t{background:rgba(20,184,166,.15);color:#5eead4}.i-a{background:rgba(245,158,11,.15);color:#fbbf24}
+.chips{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.chips span{font-size:.72rem;padding:6px 10px;border-radius:8px;background:#0b111c;border:1px solid #22303f;color:#9fb0c8}
+.foot{margin-top:20px;display:flex;align-items:center;justify-content:space-between;color:#7b8698;font-size:.9rem}
+.stack{display:flex;gap:8px}
+.stack span{font-size:.8rem;padding:6px 11px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid #22303f;color:#c5cede}
+</style></head>
+<body>
+<div class="grid"></div>
+<div class="wrap">
+  <div class="brand">
+    <div class="logo"><i class="fa-solid fa-notes-medical"></i></div>
+    <div class="n">ClearPath AI<small>Agentic Prior Authorization Review</small></div>
+    <div class="badges"><span class="bd"><span class="dot"></span>GPT-4o</span><span class="bd"><span class="dot"></span>Langfuse</span></div>
+  </div>
+  <div class="main">
+    <div class="left">
+      <h1>Prior auth an agent drafts —<br/><span class="g">a human still signs off.</span></h1>
+      <div class="sub">A LangGraph agent reviews requests against clinical criteria, escalates every denial to a human, and audits every step.</div>
+      <div class="feats">
+        <div class="feat"><i class="fa-solid fa-diagram-project"></i> LangGraph: proposer → critic → judge routing</div>
+        <div class="feat"><i class="fa-solid fa-book-medical"></i> RAG-grounded in certified clinical criteria</div>
+        <div class="feat g"><i class="fa-solid fa-user-shield"></i> Never auto-denies — every denial to a human</div>
+        <div class="feat g"><i class="fa-solid fa-satellite-dish"></i> Self-correction loop + full Langfuse audit</div>
+      </div>
+    </div>
+    <div class="mock">
+      <div class="dhead"><span class="dpill"><i class="fa-solid fa-circle-xmark"></i> DENY</span>
+        <span class="route">Escalated to human</span></div>
+      <div class="mini">
+        <div class="mstep"><span class="ic i-b"><i class="fa-solid fa-magnifying-glass"></i></span> Retrieve · matched MRI-LSPINE-001</div>
+        <div class="mstep"><span class="ic i-p"><i class="fa-solid fa-pen-to-square"></i></span> Proposer · deny, conservative therapy not met</div>
+        <div class="mstep"><span class="ic i-t"><i class="fa-solid fa-user-shield"></i></span> Critic · 95% confidence, agrees</div>
+        <div class="mstep"><span class="ic i-a"><i class="fa-solid fa-user-doctor"></i></span> Router · denial → human sign-off</div>
+      </div>
+      <div class="chips"><span>55% auto-resolved</span><span>100% denials to human</span><span>≈$0.005 / decision</span></div>
+    </div>
+  </div>
+  <div class="foot">
+    <div class="stack"><span>LangGraph</span><span>GPT-4o</span><span>Langfuse</span><span>FastAPI</span><span>RAG</span></div>
+    <span>agentic prior-authorization</span>
+  </div>
+</div>
+</body></html>
