@@ -1,0 +1,175 @@
+{
+  "mode": "openai",
+  "total_cases": 20,
+  "auto_resolved": 11,
+  "escalated": 9,
+  "auto_resolution_rate": 0.55,
+  "escalation_rate": 0.45,
+  "denials_to_human": 9,
+  "low_conf_escalations": 0,
+  "avg_cost_per_decision": 0.00489,
+  "critic_added_cost_per_decision": 0.00426,
+  "avg_decision_ms": 3586,
+  "rows": [
+    {
+      "id": "PA-1001",
+      "procedure": "MRI Lumbar Spine",
+      "decision": "approve",
+      "confidence": 0.95,
+      "route": "auto_approved",
+      "cost": 0.004955
+    },
+    {
+      "id": "PA-1002",
+      "procedure": "MRI Lumbar Spine",
+      "decision": "deny",
+      "confidence": 0.95,
+      "route": "needs_human",
+      "cost": 0.0048
+    },
+    {
+      "id": "PA-1003",
+      "procedure": "MRI Lumbar Spine",
+      "decision": "approve",
+      "confidence": 1.0,
+      "route": "auto_approved",
+      "cost": 0.004683
+    },
+    {
+      "id": "PA-1004",
+      "procedure": "MRI Brain",
+      "decision": "deny",
+      "confidence": 0.95,
+      "route": "needs_human",
+      "cost": 0.004898
+    },
+    {
+      "id": "PA-1005",
+      "procedure": "MRI Brain",
+      "decision": "approve",
+      "confidence": 1.0,
+      "route": "auto_approved",
+      "cost": 0.00486
+    },
+    {
+      "id": "PA-1006",
+      "procedure": "Total Knee Arthroplasty",
+      "decision": "approve",
+      "confidence": 1.0,
+      "route": "auto_approved",
+      "cost": 0.00542
+    },
+    {
+      "id": "PA-1007",
+      "procedure": "Total Knee Arthroplasty",
+      "decision": "deny",
+      "confidence": 0.95,
+      "route": "needs_human",
+      "cost": 0.005986
+    },
+    {
+      "id": "PA-1008",
+      "procedure": "Lumbar Spinal Fusion",
+      "decision": "deny",
+      "confidence": 0.95,
+      "route": "needs_human",
+      "cost": 0.005145
+    },
+    {
+      "id": "PA-1009",
+      "procedure": "Lumbar Spinal Fusion",
+      "decision": "approve",
+      "confidence": 1.0,
+      "route": "auto_approved",
+      "cost": 0.005308
+    },
+    {
+      "id": "PA-1010",
+      "procedure": "Bariatric Surgery (sleeve/bypass)",
+      "decision": "approve",
+      "confidence": 1.0,
+      "route": "auto_approved",
+      "cost": 0.00471
+    },
+    {
+      "id": "PA-1011",
+      "procedure": "Bariatric Surgery (sleeve/bypass)",
+      "decision": "deny",
+      "confidence": 0.95,
+      "route": "needs_human",
+      "cost": 0.00449
+    },
+    {
+      "id": "PA-1012",
+      "procedure": "PET/CT Scan",
+      "decision": "approve",
+      "confidence": 1.0,
+      "route": "auto_approved",
+      "cost": 0.004691
+    },
+    {
+      "id": "PA-1013",
+      "procedure": "PET/CT Scan",
+      "decision": "deny",
+      "confidence": 0.95,
+      "route": "needs_human",
+      "cost": 0.004893
+    },
+    {
+      "id": "PA-1014",
+      "procedure": "Attended Polysomnography (in-lab sleep study)",
+      "decision": "deny",
+      "confidence": 0.95,
+      "route": "needs_human",
+      "cost": 0.00507
+    },
+    {
+      "id": "PA-1015",
+      "procedure": "Attended Polysomnography (in-lab sleep study)",
+      "decision": "approve",
+      "confidence": 1.0,
+      "route": "auto_approved",
+      "cost": 0.00474
+    },
+    {
+      "id": "PA-1016",
+      "procedure": "Continuous Glucose Monitor",
+      "decision": "approve",
+      "confidence": 1.0,
+      "route": "auto_approved",
+      "cost": 0.004168
+    },
+    {
+      "id": "PA-1017",
+      "procedure": "Continuous Glucose Monitor",
+      "decision": "deny",
+      "confidence": 0.95,
+      "route": "needs_human",
+      "cost": 0.004735
+    },
+    {
+      "id": "PA-1018",
+      "procedure": "BRCA1/2 Genetic Testing",
+      "decision": "approve",
+      "confidence": 1.0,
+      "route": "auto_approved",
+      "cost": 0.004671
+    },
+    {
+      "id": "PA-1019",
+      "procedure": "BRCA1/2 Genetic Testing",
+      "decision": "deny",
+      "confidence": 0.95,
+      "route": "needs_human",
+      "cost": 0.004848
+    },
+    {
+      "id": "PA-1020",
+      "procedure": "CT Abdomen and Pelvis with contrast",
+      "decision": "approve",
+      "confidence": 1.0,
+      "route": "auto_approved",
+      "cost": 0.004645
+    }
+  ]
+}

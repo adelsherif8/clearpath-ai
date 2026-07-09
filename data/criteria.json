@@ -1,0 +1,92 @@
+[
+  {
+    "id": "MRI-LSPINE-001",
+    "procedure": "MRI Lumbar Spine",
+    "indication": "Low back pain / radiculopathy",
+    "plans": ["Commercial", "Medicare Advantage", "Medicaid"],
+    "criteria": "Approve if ANY red-flag is present: suspected cauda equina, progressive neurological deficit, history of cancer with new back pain, suspected spinal infection (fever + IV drug use), or major trauma. Otherwise require at least 6 weeks of documented conservative therapy (physical therapy AND NSAIDs or equivalent) that has failed. Imaging within the last 12 months for the same indication should not be repeated without a clinical change.",
+    "red_flags": ["cauda equina", "progressive neurological deficit", "cancer history with new pain", "spinal infection signs", "major trauma"],
+    "source": "ACR Appropriateness Criteria — Low Back Pain"
+  },
+  {
+    "id": "MRI-BRAIN-002",
+    "procedure": "MRI Brain",
+    "indication": "Headache",
+    "plans": ["Commercial", "Medicare Advantage", "Medicaid"],
+    "criteria": "Approve immediately for red-flag headache: thunderclap onset, new focal neurological deficit, papilledema, headache with fever and neck stiffness, or new headache in a patient over 50 or with cancer/immunocompromise. For uncomplicated headache, require at least 4 weeks of first-line management and a documented neurological exam before advanced imaging.",
+    "red_flags": ["thunderclap onset", "focal neurological deficit", "papilledema", "fever with neck stiffness", "new headache age over 50"],
+    "source": "ACR Appropriateness Criteria — Headache"
+  },
+  {
+    "id": "TKA-KNEE-003",
+    "procedure": "Total Knee Arthroplasty",
+    "indication": "Knee osteoarthritis",
+    "plans": ["Commercial", "Medicare Advantage"],
+    "criteria": "Require radiographic evidence of osteoarthritis Kellgren-Lawrence grade 3 or 4 AND at least 3 months of failed conservative treatment (NSAIDs, physical therapy, and either weight management or intra-articular injections). BMI over 40 requires documentation that the surgical team accepts the elevated risk. Deny if no imaging confirms advanced OA.",
+    "red_flags": [],
+    "source": "AAOS Clinical Practice Guideline — Knee OA"
+  },
+  {
+    "id": "SPINE-FUSION-004",
+    "procedure": "Lumbar Spinal Fusion",
+    "indication": "Degenerative disc disease / spondylolisthesis",
+    "plans": ["Commercial", "Medicare Advantage"],
+    "criteria": "High-scrutiny procedure. Require ALL of: imaging confirming instability or spondylolisthesis, at least 6 months of failed comprehensive conservative care, a failed trial of epidural steroid injection, and a documented psychosocial assessment. Uncomplicated axial low back pain without instability is not an indication. Any denial or uncertainty must go to human review.",
+    "red_flags": [],
+    "source": "Payer Medical Policy — Spinal Fusion"
+  },
+  {
+    "id": "BARIATRIC-005",
+    "procedure": "Bariatric Surgery (sleeve/bypass)",
+    "indication": "Morbid obesity",
+    "plans": ["Commercial", "Medicaid"],
+    "criteria": "Require BMI >= 40, OR BMI >= 35 with at least one obesity-related comorbidity (type 2 diabetes, obstructive sleep apnea, hypertension). Require a documented 6-month medically supervised weight-management program and a psychological evaluation. Patients under 18 always require human review.",
+    "red_flags": ["patient under 18"],
+    "source": "Payer Medical Policy — Bariatric Surgery"
+  },
+  {
+    "id": "PET-ONC-006",
+    "procedure": "PET/CT Scan",
+    "indication": "Oncologic staging",
+    "plans": ["Commercial", "Medicare Advantage", "Medicaid"],
+    "criteria": "Approve for initial staging of a biopsy-confirmed malignancy where PET changes management (e.g., lung, lymphoma, melanoma, head and neck, esophageal). Approve for restaging with suspected recurrence supported by rising tumor markers or symptoms. Do not approve for routine surveillance of cancers where PET is not guideline-recommended.",
+    "red_flags": [],
+    "source": "NCCN Imaging Appropriate Use"
+  },
+  {
+    "id": "SLEEP-007",
+    "procedure": "Attended Polysomnography (in-lab sleep study)",
+    "indication": "Suspected obstructive sleep apnea",
+    "plans": ["Commercial", "Medicare Advantage", "Medicaid"],
+    "criteria": "For uncomplicated suspected OSA, home sleep apnea testing is first-line; in-lab study requires a specific reason (significant cardiopulmonary disease, suspected central apnea, prior failed home test, or neuromuscular disease). Require documented symptoms (Epworth Sleepiness Scale or witnessed apnea). Approve in-lab directly when a complicating comorbidity is documented.",
+    "red_flags": [],
+    "source": "AASM Clinical Practice Guideline"
+  },
+  {
+    "id": "CGM-008",
+    "procedure": "Continuous Glucose Monitor",
+    "indication": "Diabetes management",
+    "plans": ["Commercial", "Medicare Advantage", "Medicaid"],
+    "criteria": "Approve for type 1 diabetes. Approve for insulin-treated type 2 diabetes with either documented problematic hypoglycemia or an HbA1c above target despite adherence. Require that the patient is engaged with a diabetes care plan. Non-insulin type 2 diabetes generally does not meet criteria.",
+    "red_flags": [],
+    "source": "ADA Standards of Care"
+  },
+  {
+    "id": "CT-ABD-009",
+    "procedure": "CT Abdomen and Pelvis with contrast",
+    "indication": "Abdominal pain",
+    "plans": ["Commercial", "Medicare Advantage", "Medicaid"],
+    "criteria": "Approve for acute abdominal pain with red flags: suspected appendicitis, bowel obstruction, suspected abscess, or acute pain with abnormal labs (elevated WBC, lactate). For chronic or vague abdominal pain, require prior workup (labs, ultrasound where appropriate) before CT. Consider contrast contraindications (renal function).",
+    "red_flags": ["suspected appendicitis", "bowel obstruction", "acute abdomen with abnormal labs"],
+    "source": "ACR Appropriateness Criteria — Abdominal Pain"
+  },
+  {
+    "id": "GENETIC-BRCA-010",
+    "procedure": "BRCA1/2 Genetic Testing",
+    "indication": "Hereditary breast/ovarian cancer risk",
+    "plans": ["Commercial", "Medicare Advantage"],
+    "criteria": "Approve when personal or family history meets NCCN criteria: breast cancer diagnosed at age 45 or younger, triple-negative breast cancer under 60, ovarian cancer at any age, a known familial BRCA mutation, or multiple close relatives with breast/ovarian/pancreatic/prostate cancer. Pre-test genetic counseling should be documented. Testing purely for reassurance without qualifying history does not meet criteria.",
+    "red_flags": [],
+    "source": "NCCN Genetic/Familial High-Risk Assessment"
+  }
+]

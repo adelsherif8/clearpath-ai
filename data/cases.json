@@ -1,0 +1,162 @@
+[
+  {
+    "id": "PA-1001",
+    "age": 52, "sex": "F", "plan": "Commercial",
+    "requested_procedure": "MRI Lumbar Spine",
+    "condition": "Low back pain, 8 weeks",
+    "notes": "8 weeks of low back pain. Completed 6 weeks of physical therapy and a course of NSAIDs with no improvement. No bowel/bladder symptoms, no leg weakness, no cancer history.",
+    "expected": "approve"
+  },
+  {
+    "id": "PA-1002",
+    "age": 39, "sex": "M", "plan": "Commercial",
+    "requested_procedure": "MRI Lumbar Spine",
+    "condition": "Low back pain, 10 days",
+    "notes": "10 days of low back pain after lifting boxes. No conservative therapy tried yet. No red-flag symptoms. Wants MRI now.",
+    "expected": "deny"
+  },
+  {
+    "id": "PA-1003",
+    "age": 66, "sex": "M", "plan": "Medicare Advantage",
+    "requested_procedure": "MRI Lumbar Spine",
+    "condition": "Back pain with leg weakness",
+    "notes": "New progressive weakness in the right leg over 5 days and new urinary retention since yesterday. History of prostate cancer.",
+    "expected": "approve"
+  },
+  {
+    "id": "PA-1004",
+    "age": 34, "sex": "F", "plan": "Commercial",
+    "requested_procedure": "MRI Brain",
+    "condition": "Chronic headache",
+    "notes": "Tension-type headaches for 3 months. Normal neurological exam. No first-line preventive medication tried yet. No red flags.",
+    "expected": "deny"
+  },
+  {
+    "id": "PA-1005",
+    "age": 45, "sex": "M", "plan": "Commercial",
+    "requested_procedure": "MRI Brain",
+    "condition": "Sudden severe headache",
+    "notes": "Sudden 'worst headache of life' 2 days ago, peaked within seconds. Mild neck stiffness. ER referral.",
+    "expected": "approve"
+  },
+  {
+    "id": "PA-1006",
+    "age": 61, "sex": "F", "plan": "Medicare Advantage",
+    "requested_procedure": "Total Knee Arthroplasty",
+    "condition": "Knee osteoarthritis",
+    "notes": "X-ray shows Kellgren-Lawrence grade 4 medial compartment OA. Failed 5 months of NSAIDs, physical therapy, and two corticosteroid injections. BMI 31.",
+    "expected": "approve"
+  },
+  {
+    "id": "PA-1007",
+    "age": 58, "sex": "M", "plan": "Commercial",
+    "requested_procedure": "Total Knee Arthroplasty",
+    "condition": "Knee pain",
+    "notes": "Knee pain for 6 weeks. No X-ray on file. Tried ibuprofen for 2 weeks. No physical therapy.",
+    "expected": "deny"
+  },
+  {
+    "id": "PA-1008",
+    "age": 47, "sex": "M", "plan": "Commercial",
+    "requested_procedure": "Lumbar Spinal Fusion",
+    "condition": "Degenerative disc disease",
+    "notes": "Chronic axial low back pain 8 months. MRI shows degenerative changes but no instability or spondylolisthesis. Completed PT. No epidural injection tried. No psychosocial assessment on file.",
+    "expected": "escalate"
+  },
+  {
+    "id": "PA-1009",
+    "age": 54, "sex": "F", "plan": "Medicare Advantage",
+    "requested_procedure": "Lumbar Spinal Fusion",
+    "condition": "Grade 2 spondylolisthesis",
+    "notes": "Imaging confirms grade 2 spondylolisthesis with instability. 7 months of failed conservative care including a failed epidural steroid injection. Psychosocial assessment completed.",
+    "expected": "approve"
+  },
+  {
+    "id": "PA-1010",
+    "age": 43, "sex": "F", "plan": "Commercial",
+    "requested_procedure": "Bariatric Surgery (sleeve/bypass)",
+    "condition": "Morbid obesity",
+    "notes": "BMI 43. Type 2 diabetes and hypertension. Completed a 6-month medically supervised weight program. Psychological evaluation completed.",
+    "expected": "approve"
+  },
+  {
+    "id": "PA-1011",
+    "age": 29, "sex": "F", "plan": "Medicaid",
+    "requested_procedure": "Bariatric Surgery (sleeve/bypass)",
+    "condition": "Obesity",
+    "notes": "BMI 36 with obstructive sleep apnea. Only 2 months into supervised weight program. Psychological evaluation not yet done.",
+    "expected": "escalate"
+  },
+  {
+    "id": "PA-1012",
+    "age": 63, "sex": "M", "plan": "Medicare Advantage",
+    "requested_procedure": "PET/CT Scan",
+    "condition": "Newly diagnosed lung cancer",
+    "notes": "Biopsy-confirmed non-small-cell lung cancer. Requesting PET/CT for initial staging to guide treatment.",
+    "expected": "approve"
+  },
+  {
+    "id": "PA-1013",
+    "age": 70, "sex": "F", "plan": "Medicare Advantage",
+    "requested_procedure": "PET/CT Scan",
+    "condition": "Surveillance after treated breast cancer",
+    "notes": "Completed treatment for early-stage breast cancer 2 years ago. Asymptomatic, tumor markers normal. Requesting PET for routine surveillance.",
+    "expected": "deny"
+  },
+  {
+    "id": "PA-1014",
+    "age": 49, "sex": "M", "plan": "Commercial",
+    "requested_procedure": "Attended Polysomnography (in-lab sleep study)",
+    "condition": "Suspected sleep apnea",
+    "notes": "Loud snoring and daytime sleepiness, Epworth score 14. No significant cardiopulmonary disease. Has not tried a home sleep test.",
+    "expected": "escalate"
+  },
+  {
+    "id": "PA-1015",
+    "age": 57, "sex": "M", "plan": "Medicare Advantage",
+    "requested_procedure": "Attended Polysomnography (in-lab sleep study)",
+    "condition": "Suspected sleep apnea with heart failure",
+    "notes": "Witnessed apneas, Epworth 16, and known congestive heart failure. Complicating cardiopulmonary comorbidity present.",
+    "expected": "approve"
+  },
+  {
+    "id": "PA-1016",
+    "age": 24, "sex": "F", "plan": "Commercial",
+    "requested_procedure": "Continuous Glucose Monitor",
+    "condition": "Type 1 diabetes",
+    "notes": "Type 1 diabetes on multiple daily insulin injections. Engaged with endocrinology. Requesting CGM.",
+    "expected": "approve"
+  },
+  {
+    "id": "PA-1017",
+    "age": 60, "sex": "M", "plan": "Medicaid",
+    "requested_procedure": "Continuous Glucose Monitor",
+    "condition": "Type 2 diabetes, non-insulin",
+    "notes": "Type 2 diabetes managed with metformin only. No insulin. HbA1c 6.8%. Requesting CGM for convenience.",
+    "expected": "deny"
+  },
+  {
+    "id": "PA-1018",
+    "age": 38, "sex": "F", "plan": "Commercial",
+    "requested_procedure": "BRCA1/2 Genetic Testing",
+    "condition": "Family history of cancer",
+    "notes": "Mother and maternal aunt both had breast cancer before age 50; one maternal relative had ovarian cancer. Pre-test counseling completed.",
+    "expected": "approve"
+  },
+  {
+    "id": "PA-1019",
+    "age": 41, "sex": "F", "plan": "Commercial",
+    "requested_procedure": "BRCA1/2 Genetic Testing",
+    "condition": "Reassurance",
+    "notes": "No personal history of cancer. One distant relative (great-aunt) with breast cancer in her 70s. Requesting testing for peace of mind.",
+    "expected": "deny"
+  },
+  {
+    "id": "PA-1020",
+    "age": 55, "sex": "M", "plan": "Medicare Advantage",
+    "requested_procedure": "CT Abdomen and Pelvis with contrast",
+    "condition": "Acute abdominal pain",
+    "notes": "Right lower quadrant pain for 1 day, fever, elevated WBC. Suspected appendicitis.",
+    "expected": "approve"
+  }
+]

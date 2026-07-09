@@ -1,0 +1,7 @@
+openai
+langgraph
+langchain-core
+langfuse
+fastapi
+jinja2
+python-multipart
