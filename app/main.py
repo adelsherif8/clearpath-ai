@@ -4,12 +4,15 @@ import os
 import json
 import uuid
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 from app.graph import run_case, _escalation_reasons
 from app import llm, tracing
+from app.mcp_server import mcp, http_app
 
 _HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 templates = Jinja2Templates(directory=os.path.join(_HERE, "templates"))
@@ -20,7 +23,17 @@ try:
 except FileNotFoundError:
     METRICS = None
 
-app = FastAPI(title="ClearPath AI")
+_mcp_app = http_app()
+
+
+@asynccontextmanager
+async def lifespan(_app):
+    async with mcp.session_manager.run():   # MCP streamable-HTTP session manager
+        yield
+
+
+app = FastAPI(title="ClearPath AI", lifespan=lifespan)
+app.mount("/mcp", _mcp_app)   # MCP endpoint: <base>/mcp/
 
 
 def _result(case: dict, state: dict, trace_url: str | None) -> dict:

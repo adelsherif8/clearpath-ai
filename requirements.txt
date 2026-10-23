@@ -5,3 +5,5 @@ langfuse
 fastapi
 jinja2
 python-multipart
+mcp>=2.3,<3
+uvicorn[standard]

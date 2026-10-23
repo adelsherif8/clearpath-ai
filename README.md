@@ -5,7 +5,7 @@ criteria, auto-resolves clear cases, escalates every denial and low-confidence
 case to a human, self-corrects when a reviewer sends a case back, and produces a
 full, auditable rationale for every decision.
 
-**Live demo:** _(deployed on Vercel)_
+**Live:** https://clearpath-798991357908.us-central1.run.app (Google Cloud Run) · **MCP server:** `https://clearpath-798991357908.us-central1.run.app/mcp/`
 
 > Decision **support**, not automation of denials. The agent never issues an
 > autonomous denial — every denial and every low-confidence case is routed to a
@@ -63,3 +63,36 @@ python -m app.evals             # recompute metrics.json
 Python · LangGraph · GPT-4o · Langfuse · FastAPI · RAG (embedding retrieval over clinical criteria)
 
 Built by **Adel Atya** — adelatya.vercel.app
+
+
+## Deployment: Google Cloud Run
+
+One container serves the reviewer dashboard, the JSON API and the MCP server (`Dockerfile`).
+
+```bash
+gcloud run deploy clearpath --source . --region us-central1 --allow-unauthenticated \
+  --min-instances 0 --max-instances 1 --memory 512Mi --cpu 1 --cpu-throttling --concurrency 10
+```
+
+Runs inside the Cloud Run always-free tier: scales to zero when idle, one instance max, CPU billed only
+during requests, an Artifact Registry cleanup policy that keeps only the latest image, and a 1 USD budget
+alert on the project. Without `OPENAI_API_KEY` it runs the deterministic offline mode (no LLM cost);
+set the key as an env var or Secret Manager secret to run real GPT-4o.
+
+## MCP server
+
+ClearPath is also a Model Context Protocol server (streamable HTTP, stateless, JSON responses) at `/mcp/`,
+built with the official MCP Python SDK (v2). Any MCP client can call the same agent the dashboard uses:
+
+| Tool | What it does |
+|---|---|
+| `list_sample_cases` | the synthetic prior-auth requests bundled with the demo (no PHI) |
+| `search_criteria` | RAG over the clinical-criteria knowledge base |
+| `review_case` | runs the LangGraph pipeline (retrieve → proposer → critic → route); denials and low-confidence cases come back `needs_human` |
+| `get_eval_metrics` | offline evaluation: accuracy, auto-resolution and escalation rates, cost per decision |
+
+Claude Desktop / any client config:
+```json
+{"mcpServers": {"clearpath": {"url": "https://clearpath-798991357908.us-central1.run.app/mcp/"}}}
+```
+DNS-rebinding protection is on: set `MCP_ALLOWED_HOSTS` to the service's hostnames.
