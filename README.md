@@ -96,3 +96,7 @@ Claude Desktop / any client config:
 {"mcpServers": {"clearpath": {"url": "https://clearpath-798991357908.us-central1.run.app/mcp/"}}}
 ```
 DNS-rebinding protection is on: set `MCP_ALLOWED_HOSTS` to the service's hostnames.
+
+---
+
+Built by **Adel Atya**, AI engineer: AI voice agents, agentic systems and automation for businesses. [adelatya.com](https://adelatya.com)
