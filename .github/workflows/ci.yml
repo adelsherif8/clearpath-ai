@@ -1,0 +1,143 @@
+# Security CI: runs on every push and pull request.
+# Every action is pinned to a full commit SHA (tag in the trailing comment) and every
+# container image to a digest. The workflow token is read-only.
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  tests:
+    name: pytest (authz matrix, RLS, validation, rate limits, injection) + restore drill
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:16@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97
+        env:
+          POSTGRES_PASSWORD: postgres-ci-only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGPASSWORD: postgres-ci-only
+      TEST_ADMIN_DATABASE_URL: postgresql://postgres:postgres-ci-only@localhost:5432/clearpath_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with: {python-version: "${{ env.PYTHON_VERSION }}"}
+      - name: Install (hash-verified)
+        run: pip install --require-hashes --no-deps -r requirements.txt -r requirements-dev.txt
+      - name: Create test database
+        run: psql -h localhost -U postgres -c "create database clearpath_test"
+      - name: pytest
+        run: python -m pytest -q -rA tests
+      - name: Prompt-injection eval set (offline mode)
+        run: python -m app.evals --injection
+      - name: Backup / restore drill
+        run: ADMIN_URL=postgresql://postgres:postgres-ci-only@localhost:5432/postgres PY=python scripts/restore_drill.sh
+
+  sast:
+    name: Bandit + Semgrep
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with: {python-version: "${{ env.PYTHON_VERSION }}"}
+      - run: pip install --require-hashes --no-deps -r requirements.txt -r requirements-dev.txt
+      - name: Bandit
+        run: bandit -r app scripts
+      - name: Semgrep (Python, OWASP Top 10, secrets)
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src \
+            semgrep/semgrep:1.182.0@sha256:4a34048c04fef049f71665047f074cffb00cc3d89482f965a5cd151d589237af \
+            semgrep scan --config p/python --config p/owasp-top-ten --config p/secrets \
+                         --metrics=off --error app scripts
+
+  dependencies:
+    name: pip-audit + CycloneDX SBOM
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with: {python-version: "${{ env.PYTHON_VERSION }}"}
+      - run: pip install --require-hashes --no-deps -r requirements-dev.txt
+      - name: pip-audit (runtime + dev lock files)
+        run: |
+          pip-audit -r requirements.txt --require-hashes --disable-pip --progress-spinner off
+          pip-audit -r requirements-dev.txt --require-hashes --disable-pip --progress-spinner off
+      - name: SBOM (CycloneDX)
+        run: cyclonedx-py requirements requirements.txt --of JSON -o sbom.cdx.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with: {name: sbom, path: sbom.cdx.json, retention-days: 30}
+
+  secrets:
+    name: gitleaks (full git history)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {fetch-depth: 0, persist-credentials: false}
+      - name: gitleaks
+        run: |
+          docker run --rm -v "$PWD:/repo" -w /repo \
+            -e GIT_CONFIG_COUNT=1 -e GIT_CONFIG_KEY_0=safe.directory -e GIT_CONFIG_VALUE_0=/repo \
+            zricethezav/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f \
+            git --redact --verbose --exit-code 1 /repo
+
+  image:
+    name: Docker image + Trivy + OWASP ZAP baseline
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {persist-credentials: false}
+      - name: Build image
+        run: docker build -t clearpath:ci .
+      - name: Trivy image scan (fail on fixable HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: clearpath:ci
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          format: table
+      - name: Start the app (production config, offline LLM mode, no secrets)
+        run: |
+          docker run -d --name cp -p 8080:8080 -e PORT=8080 -e ALLOWED_HOSTS=localhost,127.0.0.1 clearpath:ci
+          for i in $(seq 1 30); do curl -fsS http://localhost:8080/health && exit 0; sleep 1; done
+          docker logs cp; exit 1
+      - name: OWASP ZAP baseline
+        uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25 # v0.15.0
+        with:
+          target: http://localhost:8080
+          rules_file_name: .zap/rules.tsv
+          allow_issue_writing: false
+          fail_action: false
+          cmd_options: "-a"
+          artifact_name: zap-baseline
+      - name: Fail on any Medium/High ZAP alert not documented in .zap/rules.tsv
+        run: python3 .zap/gate.py report_json.json .zap/rules.tsv
+      - if: always()
+        run: docker logs cp | tail -50

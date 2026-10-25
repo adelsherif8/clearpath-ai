@@ -1,5 +1,5 @@
 # Runtime dependencies. Edit this file, then regenerate the hash-pinned lock:
-#   uv pip compile --generate-hashes --python-version 3.12 -o requirements.txt requirements.in
+#   uv pip compile --generate-hashes --python-version 3.12 --python-platform linux -o requirements.txt requirements.in
 openai>=2,<3
 langgraph>=1.2,<2
 langchain-core>=1.4,<2

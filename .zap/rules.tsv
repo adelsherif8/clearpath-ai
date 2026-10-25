@@ -1,0 +1,2 @@
+# ZAP baseline rule config: <rule id>	<IGNORE|WARN|FAIL>	<reason>
+# Every IGNORE here is an accepted, documented finding (see docs/SECURITY_REVIEW.md, ZAP section).
