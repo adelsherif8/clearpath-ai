@@ -17,7 +17,8 @@ file="$OUT_DIR/clearpath-$stamp.dump"
 
 $PG_DUMP --dbname="$BACKUP_DATABASE_URL" --format=custom --compress=9 --schema=clearpath \
          --no-comments --file="$file"
-sha256sum "$file" 2>/dev/null > "$file.sha256" || shasum -a 256 "$file" > "$file.sha256"
+# checksum against the bare file name so it verifies wherever the dump is downloaded
+(cd "$OUT_DIR" && { sha256sum "$(basename "$file")" 2>/dev/null || shasum -a 256 "$(basename "$file")"; } > "$(basename "$file").sha256")
 echo "dump written: $file ($(wc -c < "$file") bytes)"
 
 if [[ -n "${BACKUP_BUCKET:-}" ]]; then
