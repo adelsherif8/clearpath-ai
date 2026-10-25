@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Dump the clearpath schema (structure + data + RLS policies + grants + triggers) to a
+# compressed custom-format archive, and optionally upload it to a private GCS bucket.
+#
+#   BACKUP_DATABASE_URL  owner connection (pg_dump must be able to read every row; RLS is
+#                        enforced for the app role, so the app's own credential can't be used)
+#   BACKUP_BUCKET        gs://bucket-name   (optional; omit to keep the file locally)
+#   OUT_DIR              where to write the dump (default: ./backups)
+#   PG_DUMP              pg_dump binary (default: pg_dump; must be >= the server's major version)
+set -euo pipefail
+: "${BACKUP_DATABASE_URL:?set BACKUP_DATABASE_URL}"
+OUT_DIR="${OUT_DIR:-./backups}"
+PG_DUMP="${PG_DUMP:-pg_dump}"
+mkdir -p "$OUT_DIR"
+stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+file="$OUT_DIR/clearpath-$stamp.dump"
+
+$PG_DUMP --dbname="$BACKUP_DATABASE_URL" --format=custom --compress=9 --schema=clearpath \
+         --no-comments --file="$file"
+sha256sum "$file" 2>/dev/null > "$file.sha256" || shasum -a 256 "$file" > "$file.sha256"
+echo "dump written: $file ($(wc -c < "$file") bytes)"
+
+if [[ -n "${BACKUP_BUCKET:-}" ]]; then
+  dest="$BACKUP_BUCKET/clearpath/$(date -u +%Y/%m/%d)/"
+  gcloud storage cp "$file" "$file.sha256" "$dest"
+  echo "uploaded to $dest"
+fi
+echo "$file"
