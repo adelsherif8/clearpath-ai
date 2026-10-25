@@ -16,6 +16,8 @@ def test_security_headers_on_html(client):
     assert h["referrer-policy"] == "no-referrer"
     assert h["x-frame-options"] == "DENY"
     assert "camera=()" in h["permissions-policy"]
+    assert h["cross-origin-embedder-policy"] == "require-corp"
+    assert h["cross-origin-opener-policy"] == "same-origin"
 
 
 def test_security_headers_on_api_and_mcp(client):

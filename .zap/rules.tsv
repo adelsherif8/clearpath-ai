@@ -1,2 +1,6 @@
 # ZAP baseline rule config: <rule id>	<IGNORE|WARN|FAIL>	<reason>
-# Every IGNORE here is an accepted, documented finding (see docs/SECURITY_REVIEW.md, ZAP section).
+# The CI gate (.zap/gate.py) fails on any Medium/High alert whose rule is not IGNOREd here.
+# Informational alerts seen on the first run (2026-10-25), kept visible as WARN, with the reason:
+10049	WARN	Non-Storable Content: intentional. Every response sets Cache-Control: no-store so case data is never cached.
+10109	WARN	Modern Web Application: informational; the dashboard is a JS app. Not a vulnerability.
+90005	WARN	Sec-Fetch-* headers missing: these are REQUEST headers the ZAP spider does not send; browsers do. Informational.

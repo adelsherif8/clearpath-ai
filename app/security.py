@@ -154,6 +154,8 @@ class SecurityHeadersMiddleware:
                 }
                 if is_html_app:
                     extra[b"content-security-policy"] = content_security_policy().encode()
+                    # cdnjs serves Font Awesome with CORP: cross-origin, so require-corp is safe.
+                    extra[b"cross-origin-embedder-policy"] = b"require-corp"
                 else:
                     extra[b"content-security-policy"] = b"default-src 'none'; frame-ancestors 'none'"
                 if settings().is_production:
