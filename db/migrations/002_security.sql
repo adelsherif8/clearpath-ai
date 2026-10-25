@@ -28,7 +28,15 @@ begin
     create role clearpath_app nologin nosuperuser nocreatedb nocreaterole noinherit nobypassrls;
   end if;
 end $$;
-alter role clearpath_app nosuperuser nocreatedb nocreaterole nobypassrls;
+-- Verify (rather than ALTER, which needs superuser on managed Postgres such as Supabase)
+-- that the role can never bypass RLS or escalate.
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'clearpath_app'
+             and (rolsuper or rolbypassrls or rolcreatedb or rolcreaterole)) then
+    raise exception 'clearpath_app has unsafe attributes; recreate it as NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE';
+  end if;
+end $$;
 
 -- Supabase: make sure the Data API roles can never reach this schema.
 do $$

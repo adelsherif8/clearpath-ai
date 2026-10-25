@@ -13,12 +13,26 @@ gcloud iam service-accounts describe "$SA" --project "$PROJECT" >/dev/null 2>&1 
     --display-name "ClearPath Cloud Run runtime (least privilege)"
 
 put_secret() {   # name, prompt
-  local name="$1" prompt="$2" value
-  read -r -s -p "$prompt (leave empty to skip): " value; echo
+  # Value sources, in order: env var SECRET_<NAME> (e.g. piped from Keychain), a hidden macOS
+  # dialog when ASK_GUI=1, otherwise a hidden terminal prompt. Never echoed or written to disk.
+  local name="$1" prompt="$2" value var
+  var="SECRET_$(echo "$name" | tr 'a-z-' 'A-Z_')"
+  value="${!var:-}"
+  if [[ -z "$value" && "${ASK_GUI:-0}" == "1" ]]; then
+    value="$(osascript -e "text returned of (display dialog \"ClearPath: $prompt\" & return & \"(leave empty to skip)\" default answer \"\" with hidden answer giving up after 900)" 2>/dev/null || true)"
+  elif [[ -z "$value" && "${ASK_GUI:-0}" != "1" && -t 0 ]]; then
+    read -r -s -p "$prompt (leave empty to skip): " value; echo
+  fi
   [[ -z "$value" ]] && { echo "  skipped $name"; return; }
   gcloud secrets describe "$name" --project "$PROJECT" >/dev/null 2>&1 || \
     gcloud secrets create "$name" --project "$PROJECT" --replication-policy=user-managed --locations="$REGION"
   printf '%s' "$value" | gcloud secrets versions add "$name" --project "$PROJECT" --data-file=-
+  if [[ "$name" == "backup-database-url" ]]; then
+    # Owner credential: only the backup job's identity may read it (granted in backup_bucket.sh),
+    # never the app's runtime service account.
+    echo "  $name: new version stored (no runtime access)"
+    return
+  fi
   gcloud secrets add-iam-policy-binding "$name" --project "$PROJECT" \
     --member "serviceAccount:$SA" --role roles/secretmanager.secretAccessor >/dev/null
   echo "  $name: new version stored, $SA can read it"
