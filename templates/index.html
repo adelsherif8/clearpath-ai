@@ -4,91 +4,13 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>ClearPath AI — Agentic Prior Authorization Review</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<style>
-:root{--bg:#0b0f16;--panel:#111825;--panel2:#0d131e;--line:#1e2938;--ink:#e7ecf4;--dim:#8a95a8;
---acc:#3b82f6;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--teal:#14b8a6}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-.mono{font-family:'JetBrains Mono',monospace}
-.wrap{max-width:1220px;margin:0 auto;padding:20px}
-header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
-.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:1.25rem;
-background:linear-gradient(135deg,#3b82f6,#14b8a6);color:#04121f}
-.brand h1{font-size:1.28rem;letter-spacing:-.02em}
-.brand p{font-size:.82rem;color:var(--dim)}
-.badges{margin-left:auto;display:flex;gap:9px;flex-wrap:wrap}
-.badge{display:inline-flex;align-items:center;gap:7px;font-size:.76rem;font-weight:600;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel)}
-.badge .dot{width:8px;height:8px;border-radius:50%}
-.badge.on .dot{background:var(--green);box-shadow:0 0 8px var(--green)}
-.badge.mock .dot{background:var(--amber);box-shadow:0 0 8px var(--amber)}
-/* metrics strip */
-.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
-.tile{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 16px}
-.tile .v{font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
-.tile .l{font-size:.74rem;color:var(--dim);margin-top:3px}
-.tile .v.g{color:var(--green)}.tile .v.a{color:var(--amber)}.tile .v.b{color:#60a5fa}
-.grid{display:grid;grid-template-columns:360px 1fr;gap:18px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
-.card h3{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin-bottom:12px;font-weight:600}
-label{font-size:.78rem;color:var(--dim);display:block;margin:10px 0 4px}
-input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--ink);padding:9px 11px;font-size:.9rem;font-family:inherit}
-textarea{resize:vertical;min-height:72px}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;padding:11px;font-weight:600;font-size:.92rem;cursor:pointer;width:100%;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn:disabled{opacity:.5}
-.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
-.chip{font-size:.74rem;padding:6px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);cursor:pointer}
-.chip:hover{border-color:var(--acc)}
-.chip.deny{border-color:rgba(239,68,68,.35)}.chip.esc{border-color:rgba(245,158,11,.35)}
-.queue{margin-top:8px;display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto}
-.qitem{border:1px solid var(--line);border-radius:9px;padding:9px 11px;cursor:pointer;background:var(--panel2)}
-.qitem:hover{border-color:var(--amber)}
-.qitem .t{font-size:.85rem;font-weight:600}
-.qitem .s{font-size:.72rem;color:var(--dim)}
-.empty{color:var(--dim);font-size:.82rem;padding:8px 0}
-/* result */
-#result .placeholder{color:var(--dim);text-align:center;padding:60px 20px}
-#result .placeholder i{font-size:2.2rem;color:#2a3648;margin-bottom:12px}
-.decision{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
-.dpill{font-size:1.1rem;font-weight:700;padding:8px 16px;border-radius:10px;display:inline-flex;align-items:center;gap:9px}
-.dpill.approve{background:rgba(34,197,94,.14);color:#4ade80;border:1px solid rgba(34,197,94,.4)}
-.dpill.deny{background:rgba(239,68,68,.14);color:#f87171;border:1px solid rgba(239,68,68,.4)}
-.route{font-size:.82rem;font-weight:600;padding:7px 13px;border-radius:999px}
-.route.auto{background:rgba(34,197,94,.12);color:#4ade80}
-.route.human{background:rgba(245,158,11,.12);color:#fbbf24}
-.conf{margin-left:auto;font-size:.85rem;color:var(--dim)}
-.reasons{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.28);border-radius:10px;padding:11px 14px;margin:14px 0;font-size:.86rem}
-.reasons b{color:#fbbf24}.reasons ul{margin:6px 0 0 18px}
-.trace{margin-top:14px}
-.step{border-left:2px solid var(--line);padding:0 0 4px 18px;position:relative;margin-left:6px}
-.step::before{content:'';position:absolute;left:-7px;top:2px;width:12px;height:12px;border-radius:50%;background:var(--panel);border:2px solid var(--acc)}
-.step.proposer::before{border-color:#a78bfa}.step.critic::before{border-color:var(--teal)}
-.step.flag_for_review::before{border-color:var(--amber)}.step.auto_finalize::before{border-color:var(--green)}
-.step .st{font-weight:600;font-size:.92rem;display:flex;align-items:center;gap:8px}
-.step .ss{font-size:.82rem;color:var(--dim);margin:2px 0 6px}
-.step .meta{font-size:.7rem;color:#5c6a80;margin-left:auto;font-weight:500}
-.det{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:.82rem;margin-bottom:12px}
-.det .kv{margin:3px 0}.det .kv b{color:#c5cede}
-.tag{display:inline-block;font-size:.72rem;padding:3px 8px;border-radius:6px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);color:#93c5fd;margin:2px 4px 2px 0}
-.actions{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
-.abtns{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}
-.ab{flex:1;min-width:110px;border:none;border-radius:10px;padding:11px;font-weight:600;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
-.ab.app{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.4)}
-.ab.den{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.4)}
-.ab.snd{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.4)}
-.ab:hover{filter:brightness(1.2)}
-.lf{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;color:#60a5fa;margin-top:12px}
-.finalized{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.35);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:.9rem;color:#4ade80}
-.disc{font-size:.72rem;color:#5c6a80;margin-top:18px;text-align:center}
-footer{text-align:center;color:var(--dim);font-size:.8rem;margin-top:22px}
-@media(max-width:980px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<link rel="stylesheet" href="/static/app.css"/>
+<script src="/static/app.js" defer></script>
 </head>
-<body>
+<body data-auth-enabled="{{ 'true' if auth_enabled else 'false' }}">
 <div class="wrap">
   <header>
     <div class="logo"><i class="fa-solid fa-notes-medical"></i></div>
@@ -104,6 +26,20 @@ footer{text-align:center;color:var(--dim);font-size:.8rem;margin-top:22px}
     </div>
   </header>
 
+  <div class="card authbar" id="authbar">
+    <div class="authbox" id="signedout">
+      <span class="who"><i class="fa-solid fa-user"></i> Visitor: sample cases only.</span>
+      <input id="a_email" type="email" autocomplete="username" placeholder="email" maxlength="254"/>
+      <input id="a_pass" type="password" autocomplete="current-password" placeholder="password" maxlength="256"/>
+      <button class="sbtn" id="loginbtn" type="button"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>
+      <span class="who" id="autherr"></span>
+    </div>
+    <div class="authbox hidden" id="signedin">
+      <span class="who"><i class="fa-solid fa-user-check"></i> Signed in as <b id="whorole"></b></span>
+      <button class="sbtn" id="logoutbtn" type="button"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
+    </div>
+  </div>
+
   {% if metrics %}
   <div class="metrics">
     <div class="tile"><div class="v g">{{ (metrics.auto_resolution_rate*100)|round|int }}%</div><div class="l">Auto-resolved</div></div>
@@ -115,35 +51,34 @@ footer{text-align:center;color:var(--dim);font-size:.8rem;margin-top:22px}
   {% endif %}
 
   <div class="grid">
-    <!-- left: submit + queue -->
     <div>
       <div class="card">
         <h3><i class="fa-solid fa-file-medical"></i> New prior-auth request</h3>
-        <label>Requested procedure</label>
-        <input id="f_proc" placeholder="e.g. MRI Lumbar Spine"/>
+        <label for="f_proc">Requested procedure</label>
+        <input id="f_proc" placeholder="e.g. MRI Lumbar Spine" maxlength="120"/>
         <div class="row2">
-          <div><label>Plan</label>
+          <div><label for="f_plan">Plan</label>
             <select id="f_plan"><option>Commercial</option><option>Medicare Advantage</option><option>Medicaid</option></select></div>
-          <div><label>Condition</label><input id="f_cond" placeholder="Low back pain"/></div>
+          <div><label for="f_cond">Condition</label><input id="f_cond" placeholder="Low back pain" maxlength="200"/></div>
         </div>
         <div class="row2">
-          <div><label>Age</label><input id="f_age" placeholder="52"/></div>
-          <div><label>Sex</label><select id="f_sex"><option>F</option><option>M</option></select></div>
+          <div><label for="f_age">Age</label><input id="f_age" type="number" min="0" max="120" placeholder="52"/></div>
+          <div><label for="f_sex">Sex</label><select id="f_sex"><option>F</option><option>M</option><option>U</option></select></div>
         </div>
-        <label>Clinical notes</label>
-        <textarea id="f_notes" placeholder="History, conservative therapy tried, red flags…"></textarea>
-        <button class="btn" id="runbtn" onclick="submitCase()"><i class="fa-solid fa-robot"></i> Run agent review</button>
-        <h3 style="margin-top:16px"><i class="fa-solid fa-flask"></i> Load a sample case</h3>
+        <label for="f_notes">Clinical notes</label>
+        <textarea id="f_notes" maxlength="4000" placeholder="History, conservative therapy tried, red flags…"></textarea>
+        <button class="btn" id="runbtn" type="button"><i class="fa-solid fa-robot"></i> Run agent review</button>
+        <div class="notice" id="submitnote">Visitors can run the sample cases below. Sign in as a submitter to review and store your own case.</div>
+        <h3 class="mt16"><i class="fa-solid fa-flask"></i> Load a sample case</h3>
         <div class="chips" id="samplechips"></div>
       </div>
 
-      <div class="card" style="margin-top:16px">
-        <h3><i class="fa-solid fa-user-doctor"></i> Human review queue <span id="qcount" class="mono" style="color:var(--amber)"></span></h3>
+      <div class="card mt16">
+        <h3><i class="fa-solid fa-user-doctor"></i> <span id="queuetitle">Human review queue</span> <span id="qcount" class="mono amber"></span></h3>
         <div class="queue" id="queue"><div class="empty">Escalated cases will appear here.</div></div>
       </div>
     </div>
 
-    <!-- right: result -->
     <div class="card" id="result">
       <div class="placeholder">
         <i class="fa-solid fa-diagram-project"></i>
@@ -155,131 +90,5 @@ footer{text-align:center;color:var(--dim);font-size:.8rem;margin-top:22px}
   <div class="disc"><i class="fa-solid fa-circle-info"></i> Demo with synthetic, non-PHI data. Decision <b>support</b> only — the agent never issues an autonomous denial; every denial and low-confidence case is routed to a human reviewer.</div>
   <footer>ClearPath AI · LangGraph · GPT-4o · Langfuse · RAG-grounded clinical criteria · built by Adel Atya</footer>
 </div>
-
-<script>
-const SAMPLES = {{ samples|tojson }};
-const $ = id => document.getElementById(id);
-let QUEUE = [];
-
-function renderChips(){
-  $('samplechips').innerHTML = SAMPLES.map((c,i)=>{
-    const cls = c.expected==='deny'?'deny':(c.expected==='escalate'?'esc':'');
-    return `<span class="chip ${cls}" onclick="loadSample(${i})">${c.id} · ${c.requested_procedure.split(' ').slice(0,2).join(' ')}</span>`;
-  }).join('');
-}
-function loadSample(i){
-  const c = SAMPLES[i];
-  $('f_proc').value=c.requested_procedure; $('f_plan').value=c.plan; $('f_cond').value=c.condition;
-  $('f_age').value=c.age; $('f_sex').value=c.sex; $('f_notes').value=c.notes;
-  submitCase(c.id);
-}
-function collectCase(id){
-  return {id: id||null, requested_procedure:$('f_proc').value.trim(), plan:$('f_plan').value,
-    condition:$('f_cond').value.trim(), age:$('f_age').value.trim(), sex:$('f_sex').value, notes:$('f_notes').value.trim()};
-}
-
-async function submitCase(id){
-  const c = collectCase(id);
-  if(!c.requested_procedure || !c.notes){ alert('Enter a procedure and clinical notes (or load a sample).'); return; }
-  const btn=$('runbtn'); btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Running pipeline…';
-  $('result').innerHTML = '<div class="placeholder"><i class="fa-solid fa-spinner fa-spin"></i><div>Retrieving criteria → proposer → critic → routing…</div></div>';
-  try{
-    const r = await fetch('/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({case:c})});
-    const d = await r.json();
-    if(d.error){ $('result').innerHTML='<div class="placeholder">'+d.error+'</div>'; return; }
-    renderResult(d);
-    if(d.route==='needs_human') addToQueue(d);
-  }catch(e){ $('result').innerHTML='<div class="placeholder">Error: '+e+'</div>'; }
-  finally{ btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-robot"></i> Run agent review'; }
-}
-
-function addToQueue(d){
-  if(QUEUE.find(x=>x.id===d.id)) QUEUE = QUEUE.filter(x=>x.id!==d.id);
-  QUEUE.unshift(d); renderQueue();
-}
-function renderQueue(){
-  $('qcount').textContent = QUEUE.length? '('+QUEUE.length+')':'';
-  if(!QUEUE.length){ $('queue').innerHTML='<div class="empty">Escalated cases will appear here.</div>'; return; }
-  $('queue').innerHTML = QUEUE.map(d=>`<div class="qitem" onclick='renderResult(${JSON.stringify(d).replace(/'/g,"&#39;")})'>
-     <div class="t">${d.id} · ${d.decision.toUpperCase()}</div>
-     <div class="s">${d.case.requested_procedure} · ${Math.round(d.confidence*100)}% conf</div></div>`).join('');
-}
-
-function stepDetail(s){
-  const n=s.node, det=s.detail||{};
-  if(n==='retrieve') return (det||[]).map(x=>`<span class="tag">${x.id} · ${x.score}</span>`).join('');
-  if(n==='proposer') return `<div class="kv"><b>Rationale:</b> ${esc(det.rationale||'')}</div>
-    <div class="kv"><b>Cited:</b> ${(det.cited_criteria||[]).map(x=>`<span class="tag">${x}</span>`).join('')}</div>
-    ${(det.unmet_requirements||[]).length?`<div class="kv"><b>Unmet:</b> ${det.unmet_requirements.map(esc).join('; ')}</div>`:''}`;
-  if(n==='critic') return `<div class="kv"><b>Confidence:</b> ${Math.round((det.confidence||0)*100)}% · ${det.agree?'agrees':'disagrees'}</div>
-    ${(det.gaps||[]).length?`<div class="kv"><b>Gaps:</b> ${det.gaps.map(esc).join('; ')}</div>`:''}
-    ${det.concern?`<div class="kv"><b>Concern:</b> ${esc(det.concern)}</div>`:''}`;
-  if(n==='flag_for_review') return `<div class="kv">${(det.reasons||[]).map(esc).join('<br>')}</div>`;
-  return '';
-}
-
-function renderResult(d){
-  const isAuto = d.route==='auto_approved';
-  const traceHtml = d.trace.map(s=>{
-    const dt = stepDetail(s);
-    const icon = {retrieve:'fa-magnifying-glass',proposer:'fa-pen-to-square',critic:'fa-user-shield',auto_finalize:'fa-circle-check',flag_for_review:'fa-user-doctor'}[s.node]||'fa-circle';
-    return `<div class="step ${s.node}">
-       <div class="st"><i class="fa-solid ${icon}"></i> ${s.title}
-         <span class="meta">${s.tokens?s.tokens+' tok · ':''}${s.latency_ms}ms</span></div>
-       <div class="ss">${esc(s.summary)}</div>
-       ${dt?`<div class="det">${dt}</div>`:''}</div>`;
-  }).join('');
-
-  const reasons = (d.escalation_reasons||[]).length ? `<div class="reasons"><b><i class="fa-solid fa-triangle-exclamation"></i> Routed to human review</b>
-     <ul>${d.escalation_reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>` : '';
-
-  const actions = d.route==='needs_human' ? `<div class="actions">
-     <h3><i class="fa-solid fa-gavel"></i> Reviewer decision</h3>
-     <textarea id="revnotes" placeholder="Optional notes (used if you Send Back for self-correction)…"></textarea>
-     <div class="abtns">
-       <button class="ab app" onclick='finalize(${j(d)},"approve")'><i class="fa-solid fa-check"></i> Approve</button>
-       <button class="ab den" onclick='finalize(${j(d)},"deny")'><i class="fa-solid fa-xmark"></i> Deny</button>
-       <button class="ab snd" onclick='sendBack(${j(d)})'><i class="fa-solid fa-rotate-left"></i> Send back</button>
-     </div></div>` : '';
-
-  const lf = d.trace_url ? `<a class="lf" href="${d.trace_url}" target="_blank"><i class="fa-solid fa-satellite-dish"></i> View full trace in Langfuse</a>` : '';
-  const cost = d.usage ? `${d.usage.in+d.usage.out} tokens · $${(d.usage.cost||0).toFixed(4)}` : '';
-
-  $('result').innerHTML = `
-    <div class="decision">
-      <span class="dpill ${d.decision}"><i class="fa-solid fa-${d.decision==='approve'?'circle-check':'circle-xmark'}"></i> ${d.decision.toUpperCase()}</span>
-      <span class="route ${isAuto?'auto':'human'}">${isAuto?'Auto-resolved':'Escalated to human'}</span>
-      <span class="conf">${Math.round(d.confidence*100)}% confidence${d.attempt>1?` · attempt ${d.attempt}`:''}</span>
-    </div>
-    <div class="ss mono" style="font-size:.78rem;color:var(--dim)">${d.id} · ${esc(d.case.requested_procedure)} · ${esc(d.case.plan)} · ${cost}</div>
-    ${reasons}
-    <div class="trace"><h3><i class="fa-solid fa-diagram-project"></i> Agent audit trail</h3>${traceHtml}</div>
-    ${lf}
-    ${actions}
-    <div id="finalslot"></div>`;
-}
-
-async function sendBack(d){
-  const notes = ($('revnotes')?$('revnotes').value.trim():'') || 'Please re-check against the criteria.';
-  $('finalslot').innerHTML='<div class="ss"><i class="fa-solid fa-spinner fa-spin"></i> Re-running with your notes (self-correction)…</div>';
-  const r = await fetch('/review',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'send_back',case:d.case,notes,attempt:d.attempt,id:d.id})});
-  const nd = await r.json();
-  renderResult(nd);
-  if(nd.route==='needs_human') addToQueue(nd); else { QUEUE=QUEUE.filter(x=>x.id!==d.id); renderQueue(); }
-}
-async function finalize(d,action){
-  const notes = $('revnotes')?$('revnotes').value.trim():'';
-  await fetch('/review',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action,case:d.case,notes,id:d.id})});
-  QUEUE = QUEUE.filter(x=>x.id!==d.id); renderQueue();
-  $('finalslot').innerHTML = `<div class="finalized"><i class="fa-solid fa-clipboard-check"></i>
-    Human reviewer <b>${action==='approve'?'APPROVED':'DENIED'}</b> ${d.id}. Decision recorded with full audit trail.</div>`;
-}
-
-function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function j(d){return JSON.stringify(d).replace(/"/g,'&quot;').replace(/'/g,"\\'");}
-renderChips();
-</script>
 </body>
 </html>

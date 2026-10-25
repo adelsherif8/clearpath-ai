@@ -1,8 +1,16 @@
 .git
+.github
 .venv
+.vercel
 __pycache__/
 docs/
+tests/
+db/
+infra/
+scripts/
 *.mp4
 *.gif
 *.png
 .env
+.env.*
+*.dump

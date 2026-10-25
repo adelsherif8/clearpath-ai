@@ -1,0 +1,55 @@
+# Daily database backup to a private GCS bucket, restore-verified on every run.
+# Auth is keyless (Workload Identity Federation): no GCP key and no DB password live in GitHub.
+# The owner DB URL is fetched from Secret Manager at run time.
+name: db-backup
+
+on:
+  schedule:
+    - cron: "17 3 * * *"     # 03:17 UTC daily
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  backup:
+    if: ${{ vars.GCP_WIF_PROVIDER != '' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write          # for Workload Identity Federation only
+    services:
+      scratch:
+        image: postgres:17@sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe
+        env: {POSTGRES_PASSWORD: scratch-only}
+        ports: ["5433:5432"]
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {persist-credentials: false}
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_BACKUP_SA }}
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with: {python-version: "3.12"}
+      - run: pip install --require-hashes --no-deps -r requirements.txt
+      - name: Install PostgreSQL 17 client (must match Supabase's major version or newer)
+        run: |
+          sudo apt-get install -y postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-17
+      - name: Dump and upload
+        id: dump
+        run: |
+          export PATH="/usr/lib/postgresql/17/bin:$PATH"
+          export BACKUP_DATABASE_URL="$(gcloud secrets versions access latest --secret=backup-database-url)"
+          echo "::add-mask::$BACKUP_DATABASE_URL"
+          file="$(OUT_DIR=$RUNNER_TEMP BACKUP_BUCKET='${{ vars.BACKUP_BUCKET }}' scripts/backup.sh | tail -1)"
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+      - name: Verify the backup actually restores (into a throwaway Postgres)
+        env: {PGPASSWORD: scratch-only}
+        run: |
+          export PATH="/usr/lib/postgresql/17/bin:$PATH"
+          psql -h localhost -p 5433 -U postgres -c "create database restore_check"
+          scripts/restore.sh "${{ steps.dump.outputs.file }}" "postgresql://postgres:scratch-only@localhost:5433/restore_check"
