@@ -1,0 +1,17 @@
+# Runtime dependencies. Edit this file, then regenerate the hash-pinned lock:
+#   uv pip compile --generate-hashes --python-version 3.12 -o requirements.txt requirements.in
+openai>=2,<3
+langgraph>=1.2,<2
+langchain-core>=1.4,<2
+langfuse>=4,<5
+fastapi
+jinja2
+python-multipart
+mcp>=2.3,<3
+uvicorn[standard]
+pydantic>=2
+slowapi
+psycopg[binary]
+psycopg-pool
+PyJWT[crypto]
+httpx

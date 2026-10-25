@@ -1,0 +1,7 @@
+# Test and scan tooling (not shipped in the image).
+#   uv pip compile --generate-hashes --python-version 3.12 -o requirements-dev.txt requirements-dev.in
+-c requirements.txt
+pytest
+bandit
+pip-audit
+
