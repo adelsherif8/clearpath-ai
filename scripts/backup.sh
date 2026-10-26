@@ -22,12 +22,17 @@ $PG_DUMP --dbname="$BACKUP_DATABASE_URL" --format=custom --compress=9 --schema=c
 echo "dump written: $file ($(wc -c < "$file") bytes)"
 
 if [[ -n "${BACKUP_BUCKET:-}" ]]; then
-  dest="$BACKUP_BUCKET/clearpath/$(date -u +%Y/%m/%d)"
-  # copy to exact object names: copying into a "folder" makes gcloud read the destination first, and the
-  # backup account is deliberately create-only (roles/storage.objectCreator), so that check fails with 403
+  # Upload with the JSON API's simple media upload: it needs only storage.objects.create. `gcloud storage cp`
+  # also reads the destination object first (storage.objects.get), and the backup account is deliberately
+  # create-only (roles/storage.objectCreator) so it can never read old backups back.
+  bucket="${BACKUP_BUCKET#gs://}"; prefix="clearpath/$(date -u +%Y/%m/%d)"
+  token="$(gcloud auth print-access-token)"
   for f in "$file" "$file.sha256"; do
-    gcloud storage cp "$f" "$dest/$(basename "$f")"
+    name="$prefix/$(basename "$f")"
+    curl --fail-with-body -sS -X POST --data-binary @"$f" \
+      -H "Authorization: Bearer $token" -H "Content-Type: application/octet-stream" \
+      "https://storage.googleapis.com/upload/storage/v1/b/$bucket/o?uploadType=media&name=${name//\//%2F}" > /dev/null
   done
-  echo "uploaded to $dest/"
+  echo "uploaded to gs://$bucket/$prefix/"
 fi
 echo "$file"
