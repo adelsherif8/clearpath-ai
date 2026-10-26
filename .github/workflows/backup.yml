@@ -45,7 +45,11 @@ jobs:
           export PATH="/usr/lib/postgresql/17/bin:$PATH"
           export BACKUP_DATABASE_URL="$(gcloud secrets versions access latest --secret=backup-database-url)"
           echo "::add-mask::$BACKUP_DATABASE_URL"
-          file="$(OUT_DIR=$RUNNER_TEMP BACKUP_BUCKET='${{ vars.BACKUP_BUCKET }}' scripts/backup.sh | tail -1)"
+          # run the script on its own (not inside a pipe) so a failed dump or upload fails this step
+          OUT_DIR=$RUNNER_TEMP BACKUP_BUCKET='${{ vars.BACKUP_BUCKET }}' scripts/backup.sh | tee "$RUNNER_TEMP/backup.log"
+          test "${PIPESTATUS[0]}" -eq 0
+          file="$(tail -1 "$RUNNER_TEMP/backup.log")"
+          test -f "$file"
           echo "file=$file" >> "$GITHUB_OUTPUT"
       - name: Verify the backup actually restores (into a throwaway Postgres)
         env: {PGPASSWORD: scratch-only}
