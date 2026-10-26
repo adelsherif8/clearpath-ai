@@ -22,8 +22,12 @@ $PG_DUMP --dbname="$BACKUP_DATABASE_URL" --format=custom --compress=9 --schema=c
 echo "dump written: $file ($(wc -c < "$file") bytes)"
 
 if [[ -n "${BACKUP_BUCKET:-}" ]]; then
-  dest="$BACKUP_BUCKET/clearpath/$(date -u +%Y/%m/%d)/"
-  gcloud storage cp "$file" "$file.sha256" "$dest"
-  echo "uploaded to $dest"
+  dest="$BACKUP_BUCKET/clearpath/$(date -u +%Y/%m/%d)"
+  # copy to exact object names: copying into a "folder" makes gcloud read the destination first, and the
+  # backup account is deliberately create-only (roles/storage.objectCreator), so that check fails with 403
+  for f in "$file" "$file.sha256"; do
+    gcloud storage cp "$f" "$dest/$(basename "$f")"
+  done
+  echo "uploaded to $dest/"
 fi
 echo "$file"
