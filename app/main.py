@@ -27,7 +27,7 @@ from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from app import audit, auth, db, llm, tracing
+from app import audit, auth, db, llm, prom, tracing
 from app.auth import Principal, current_principal, require
 from app.config import settings
 from app.graph import _escalation_reasons, run_case
@@ -74,6 +74,9 @@ def create_app() -> FastAPI:
     app.add_middleware(BodySizeLimitMiddleware, max_bytes=s.max_body_bytes)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=s.allowed_hosts)
     app.add_middleware(SecurityHeadersMiddleware)
+    if prom.port() is not None:                  # Kubernetes only: metrics for Prometheus
+        app.add_middleware(prom.PrometheusMiddleware)
+        prom.start()
 
     app.mount("/static", StaticFiles(directory=os.path.join(_HERE, "static")), name="static")
     app.mount("/mcp", McpGuardMiddleware(mcp_app))   # MCP endpoint: <base>/mcp/

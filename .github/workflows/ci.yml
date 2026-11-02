@@ -141,3 +141,35 @@ jobs:
         run: python3 .zap/gate.py report_json.json .zap/rules.tsv
       - if: always()
         run: docker logs cp | tail -50
+
+  k8s:
+    name: Helm chart on a kind cluster (lint, install, health, metrics)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {persist-credentials: false}
+      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+      - name: helm lint
+        run: helm lint charts/clearpath
+      - uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
+        with: {cluster_name: ci}
+      - name: Build the image and load it into kind
+        run: |
+          docker build -t clearpath:ci .
+          kind load docker-image clearpath:ci --name ci
+      - name: helm install (no ingress controller or Prometheus Operator in CI)
+        run: |
+          helm install clearpath charts/clearpath -n clearpath --create-namespace \
+            --set image.tag=ci --set ingress.enabled=false --set autoscaling.enabled=false \
+            --wait --timeout 5m
+      - name: Health and metrics answer through the Service
+        run: |
+          kubectl -n clearpath port-forward svc/clearpath 8080:80 9100:9100 &
+          sleep 5
+          curl -fsS -H "Host: localhost" localhost:8080/health
+          curl -fsS localhost:9100/metrics | grep -q '^clearpath_http_requests_total'
+      - name: Diagnostics on failure
+        if: failure()
+        run: kubectl -n clearpath describe pods; kubectl -n clearpath logs -l app.kubernetes.io/name=clearpath --tail=100

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: clearpath
+description: ClearPath prior-authorization agent (offline demo mode) with autoscaling, ingress and Prometheus metrics
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

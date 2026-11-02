@@ -1,0 +1,12 @@
+{{- if and .Values.metrics.enabled .Values.metrics.dashboard.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-dashboard
+  labels:
+    {{- include "clearpath.labels" . | nindent 4 }}
+    grafana_dashboard: "1"     # picked up by the Grafana sidecar in kube-prometheus-stack
+data:
+  clearpath.json: |-
+    {{- .Files.Get "dashboards/clearpath.json" | nindent 4 }}
+{{- end }}

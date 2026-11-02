@@ -1,0 +1,40 @@
+# Offline demo mode: no API keys. Production runs on Cloud Run; this chart is for Kubernetes.
+image:
+  repository: clearpath
+  tag: local
+  pullPolicy: IfNotPresent
+
+replicaCount: 2          # ignored while autoscaling is on
+
+config:
+  CP_ENV: development
+  ALLOWED_HOSTS: localhost,127.0.0.1,clearpath.local
+  CP_DAILY_LLM_CALL_CAP: "200"
+
+resources:
+  requests: {cpu: 100m, memory: 256Mi}
+  limits: {cpu: 500m, memory: 512Mi}
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 60
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+ingress:
+  enabled: true
+  className: nginx
+  host: clearpath.local
+
+metrics:
+  enabled: true
+  port: 9100
+  serviceMonitor:
+    enabled: false       # true once the Prometheus Operator CRDs are installed (kube-prometheus-stack)
+    interval: 15s
+  dashboard:
+    enabled: false       # Grafana dashboard ConfigMap, for the kube-prometheus-stack Grafana sidecar

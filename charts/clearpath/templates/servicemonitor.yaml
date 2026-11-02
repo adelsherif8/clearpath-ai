@@ -1,0 +1,15 @@
+{{- if and .Values.metrics.enabled .Values.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "clearpath.labels" . | nindent 4 }}
+    release: monitoring        # matched by the kube-prometheus-stack release named "monitoring"
+spec:
+  selector:
+    matchLabels: {{- include "clearpath.selector" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      interval: {{ .Values.metrics.serviceMonitor.interval }}
+{{- end }}
