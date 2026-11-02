@@ -1,0 +1,71 @@
+# ClearPath on Kubernetes: offline demo mode (no API keys), two replicas behind a ClusterIP service.
+# Local run: see k8s/README.md (kind cluster). Production still runs on Cloud Run.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: clearpath
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clearpath-config
+  namespace: clearpath
+data:
+  CP_ENV: development
+  ALLOWED_HOSTS: localhost,127.0.0.1
+  CP_DAILY_LLM_CALL_CAP: "200"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clearpath
+  namespace: clearpath
+  labels: {app: clearpath}
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxUnavailable: 0, maxSurge: 1}
+  selector:
+    matchLabels: {app: clearpath}
+  template:
+    metadata:
+      labels: {app: clearpath}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: clearpath
+          image: clearpath:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef: {name: clearpath-config}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+          readinessProbe:
+            httpGet: {path: /health, port: 8080, httpHeaders: [{name: Host, value: localhost}]}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health, port: 8080, httpHeaders: [{name: Host, value: localhost}]}
+            initialDelaySeconds: 10
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clearpath
+  namespace: clearpath
+spec:
+  selector: {app: clearpath}
+  ports:
+    - port: 80
+      targetPort: 8080
