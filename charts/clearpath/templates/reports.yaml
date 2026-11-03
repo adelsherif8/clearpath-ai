@@ -1,0 +1,92 @@
+{{- if .Values.reports.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-reports-data
+  labels: {{- include "clearpath.labels" . | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  {{- with .Values.reports.storageClassName }}
+  storageClassName: {{ . }}
+  {{- end }}
+  resources:
+    requests: {storage: {{ .Values.reports.storage }}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-reports
+  labels: {{- include "clearpath.labels" . | nindent 4 }}
+spec:
+  replicas: 1                # SQLite on a ReadWriteOnce volume: one writer
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app.kubernetes.io/name: reports, app.kubernetes.io/instance: {{ .Release.Name }}}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: reports, app.kubernetes.io/instance: {{ .Release.Name }}}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1654
+        fsGroup: 1654          # lets the non-root app write to the volume
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: reports
+          image: "{{ .Values.reports.image.repository }}:{{ .Values.reports.image.tag }}"
+          imagePullPolicy: {{ .Values.reports.image.pullPolicy }}
+          env:
+            - {name: CLEARPATH_URL, value: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc"}
+            - {name: SNAPSHOT_EVERY_SECONDS, value: {{ .Values.reports.snapshotEverySeconds | quote }}}
+            - {name: DB, value: "Data Source=/data/reports.db"}
+          ports:
+            - {name: http, containerPort: 8080}
+          volumeMounts:
+            - {name: data, mountPath: /data}
+            - {name: tmp, mountPath: /tmp}       # .NET diagnostics sockets; the root fs is read-only
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          resources: {{- toYaml .Values.reports.resources | nindent 12 }}
+          readinessProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /healthz, port: http}
+            initialDelaySeconds: 10
+            periodSeconds: 20
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: {{ .Release.Name }}-reports-data}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-reports
+  labels:
+    {{- include "clearpath.labels" . | nindent 4 }}
+    app.kubernetes.io/component: reports
+spec:
+  selector: {app.kubernetes.io/name: reports, app.kubernetes.io/instance: {{ .Release.Name }}}
+  ports:
+    - {name: http, port: 80, targetPort: http}
+{{- if and .Values.metrics.enabled .Values.metrics.serviceMonitor.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-reports
+  labels:
+    {{- include "clearpath.labels" . | nindent 4 }}
+    release: monitoring
+spec:
+  selector:
+    matchLabels: {app.kubernetes.io/component: reports, app.kubernetes.io/instance: {{ .Release.Name }}}
+  endpoints:
+    - {port: http, path: /metrics, interval: {{ .Values.metrics.serviceMonitor.interval }}}
+{{- end }}
+{{- end }}

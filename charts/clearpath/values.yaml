@@ -53,3 +53,18 @@ gateway:
   resources:
     requests: {cpu: 20m, memory: 16Mi}
     limits: {cpu: 200m, memory: 64Mi}
+
+# ASP.NET Core reports API (services/reports): snapshots the app's eval results into SQLite (EF Core)
+# on a PersistentVolumeClaim and serves /reports/summary, /reports/procedures, /reports/history.
+reports:
+  enabled: true
+  image:
+    repository: clearpath-reports
+    tag: local
+    pullPolicy: IfNotPresent
+  snapshotEverySeconds: 300
+  storage: 1Gi
+  storageClassName: ""     # cluster default (local-path on kind)
+  resources:
+    requests: {cpu: 20m, memory: 64Mi}
+    limits: {cpu: 300m, memory: 256Mi}
