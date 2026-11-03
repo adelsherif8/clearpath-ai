@@ -157,8 +157,22 @@ jobs:
       - run: go vet ./...
       - run: go test -race -count=1 ./...
 
+  dotnet:
+    name: .NET reports API (build, xUnit)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    defaults:
+      run: {working-directory: services/reports/tests}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {persist-credentials: false}
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with: {dotnet-version: "10.0.x"}
+      - run: dotnet test --nologo
+
   k8s:
-    name: Helm chart on a kind cluster (lint, install, app + Go gateway health and metrics)
+    name: Helm chart on a kind cluster (lint, install; app, Go gateway and .NET reports answer)
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -174,11 +188,12 @@ jobs:
         run: |
           docker build -t clearpath:ci .
           docker build -t clearpath-gateway:ci services/gateway
-          kind load docker-image clearpath:ci clearpath-gateway:ci --name ci
+          docker build -t clearpath-reports:ci services/reports
+          kind load docker-image clearpath:ci clearpath-gateway:ci clearpath-reports:ci --name ci
       - name: helm install (no ingress controller or Prometheus Operator in CI)
         run: |
           helm install clearpath charts/clearpath -n clearpath --create-namespace \
-            --set image.tag=ci --set gateway.image.tag=ci --set ingress.enabled=false --set autoscaling.enabled=false \
+            --set image.tag=ci --set gateway.image.tag=ci --set reports.image.tag=ci --set reports.snapshotEverySeconds=5 --set ingress.enabled=false --set autoscaling.enabled=false \
             --wait --timeout 5m
       - name: Health and metrics answer through the Service
         run: |
@@ -190,6 +205,11 @@ jobs:
           sleep 5
           curl -fsS -H "Host: localhost" localhost:8081/health
           curl -fsS localhost:8081/gateway/metrics | grep -q '^gateway_requests_total'
+          kubectl -n clearpath port-forward svc/clearpath-reports 8082:80 &
+          sleep 15
+          curl -fsS localhost:8082/healthz
+          curl -fsS localhost:8082/reports/summary | grep -q '"totalCases"'
+          curl -fsS localhost:8082/reports/procedures | grep -q '"procedure"'
       - name: Diagnostics on failure
         if: failure()
         run: kubectl -n clearpath describe pods; kubectl -n clearpath logs -l app.kubernetes.io/name=clearpath --tail=100

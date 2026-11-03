@@ -56,5 +56,12 @@ Grafana: `kubectl -n monitoring port-forward svc/monitoring-grafana 3000:80`, us
 Build its image and load it before installing: `docker build -t clearpath-gateway:local services/gateway &&
 kind load docker-image clearpath-gateway:local --name clearpath`. Details in `services/gateway/README.md`.
 
+**.NET reports API.** With `reports.enabled` (the default) an ASP.NET Core service (`services/reports`) snapshots
+the app's evaluation results into SQLite on a PersistentVolumeClaim and serves `/reports/*` through the same
+Ingress. Build and load `clearpath-reports:local` like the gateway. Details in `services/reports/README.md`.
+
+Note: with Prometheus, Grafana and three services, give the Colima VM at least 4 CPUs
+(`colima start --cpu 4 --memory 4`). On 2 CPUs the API server starved and timed out.
+
 Measured on a 2-CPU, 4 GB local kind cluster: under about 600 requests per second the autoscaler went from
 2 to 6 pods in under a minute, p95 latency stayed around 10 ms, and it scaled back down after the load stopped.

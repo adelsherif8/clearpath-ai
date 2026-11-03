@@ -10,6 +10,12 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
+          {{- if .Values.reports.enabled }}
+          - path: /reports
+            pathType: Prefix
+            backend:
+              service: {name: {{ .Release.Name }}-reports, port: {name: http}}
+          {{- end }}
           - path: /
             pathType: Prefix
             backend:
