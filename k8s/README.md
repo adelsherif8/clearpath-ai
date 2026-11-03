@@ -51,5 +51,10 @@ Grafana: `kubectl -n monitoring port-forward svc/monitoring-grafana 3000:80`, us
 
 ![ClearPath dashboard during a load test: requests, p95 latency, the autoscaler going from 2 to 6 pods, CPU and memory per pod](../docs/k8s/grafana-autoscaling.png)
 
+**Go gateway.** With `gateway.enabled` (the default) the Ingress sends traffic to a Go reverse proxy
+(`services/gateway`) that rate-limits each client and exports its own metrics, then forwards to the app.
+Build its image and load it before installing: `docker build -t clearpath-gateway:local services/gateway &&
+kind load docker-image clearpath-gateway:local --name clearpath`. Details in `services/gateway/README.md`.
+
 Measured on a 2-CPU, 4 GB local kind cluster: under about 600 requests per second the autoscaler went from
 2 to 6 pods in under a minute, p95 latency stayed around 10 ms, and it scaled back down after the load stopped.

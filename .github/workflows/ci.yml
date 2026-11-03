@@ -142,8 +142,23 @@ jobs:
       - if: always()
         run: docker logs cp | tail -50
 
+  go:
+    name: Go gateway (vet, race tests)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    defaults:
+      run: {working-directory: services/gateway}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {persist-credentials: false}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with: {go-version: "1.27", cache-dependency-path: services/gateway/go.sum}
+      - run: go vet ./...
+      - run: go test -race -count=1 ./...
+
   k8s:
-    name: Helm chart on a kind cluster (lint, install, health, metrics)
+    name: Helm chart on a kind cluster (lint, install, app + Go gateway health and metrics)
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -158,11 +173,12 @@ jobs:
       - name: Build the image and load it into kind
         run: |
           docker build -t clearpath:ci .
-          kind load docker-image clearpath:ci --name ci
+          docker build -t clearpath-gateway:ci services/gateway
+          kind load docker-image clearpath:ci clearpath-gateway:ci --name ci
       - name: helm install (no ingress controller or Prometheus Operator in CI)
         run: |
           helm install clearpath charts/clearpath -n clearpath --create-namespace \
-            --set image.tag=ci --set ingress.enabled=false --set autoscaling.enabled=false \
+            --set image.tag=ci --set gateway.image.tag=ci --set ingress.enabled=false --set autoscaling.enabled=false \
             --wait --timeout 5m
       - name: Health and metrics answer through the Service
         run: |
@@ -170,6 +186,10 @@ jobs:
           sleep 5
           curl -fsS -H "Host: localhost" localhost:8080/health
           curl -fsS localhost:9100/metrics | grep -q '^clearpath_http_requests_total'
+          kubectl -n clearpath port-forward svc/clearpath-gateway 8081:80 &
+          sleep 5
+          curl -fsS -H "Host: localhost" localhost:8081/health
+          curl -fsS localhost:8081/gateway/metrics | grep -q '^gateway_requests_total'
       - name: Diagnostics on failure
         if: failure()
         run: kubectl -n clearpath describe pods; kubectl -n clearpath logs -l app.kubernetes.io/name=clearpath --tail=100

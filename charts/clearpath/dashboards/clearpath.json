@@ -175,6 +175,62 @@
      "legendFormat": "{{pod}}"
     }
    ]
+  },
+  {
+   "id": 7,
+   "type": "timeseries",
+   "title": "Go gateway: requests per second by status",
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 0,
+    "y": 24
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "reqps"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum by (code) (rate(gateway_requests_total[1m]))",
+     "legendFormat": "{{code}}"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "type": "timeseries",
+   "title": "Go gateway: rate-limited (429) per second",
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 12,
+    "y": 24
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "reqps"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(rate(gateway_rate_limited_total[1m]))",
+     "legendFormat": "429s"
+    }
+   ]
   }
  ]
 }

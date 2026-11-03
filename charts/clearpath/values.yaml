@@ -38,3 +38,18 @@ metrics:
     interval: 15s
   dashboard:
     enabled: false       # Grafana dashboard ConfigMap, for the kube-prometheus-stack Grafana sidecar
+
+# Go reverse proxy in front of the app (services/gateway): per-client rate limit + its own metrics.
+# When enabled, the Ingress sends traffic to the gateway instead of straight to the app.
+gateway:
+  enabled: true
+  image:
+    repository: clearpath-gateway
+    tag: local
+    pullPolicy: IfNotPresent
+  replicas: 2
+  ratePerSecond: 20
+  burst: 40
+  resources:
+    requests: {cpu: 20m, memory: 16Mi}
+    limits: {cpu: 200m, memory: 64Mi}
