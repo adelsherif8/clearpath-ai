@@ -13,5 +13,5 @@ spec:
           - path: /
             pathType: Prefix
             backend:
-              service: {name: {{ .Release.Name }}, port: {name: http}}
+              service: {name: {{ if .Values.gateway.enabled }}{{ .Release.Name }}-gateway{{ else }}{{ .Release.Name }}{{ end }}, port: {name: http}}
 {{- end }}

@@ -9,6 +9,8 @@ metadata:
 spec:
   selector:
     matchLabels: {{- include "clearpath.selector" . | nindent 6 }}
+    matchExpressions:
+      - {key: app.kubernetes.io/component, operator: DoesNotExist}
   endpoints:
     - port: metrics
       interval: {{ .Values.metrics.serviceMonitor.interval }}
